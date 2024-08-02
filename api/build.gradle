@@ -9,3 +9,13 @@ plugins {
 dependencies {
     api project(':utilities')
 }
+
+test {
+  useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(19))
+    }
+}

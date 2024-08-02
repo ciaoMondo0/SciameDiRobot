@@ -47,4 +47,5 @@ class LinkedListTest {
         assertFalse(list.remove("three"));
         assertEquals(2, list.size());
     }
+    
 }
