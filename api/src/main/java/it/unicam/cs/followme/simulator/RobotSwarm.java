@@ -37,8 +37,7 @@ public class RobotSwarm implements Simulator {
 
 	
 
-	public void executeInstructions(File comandi, File file2) throws IOException, InterruptedException {
-		shapes = files.loadShapes(file2);
+	public void executeInstructions(File comandi) throws IOException, InterruptedException {
 
 		commands = files.parseCommands(comandi); // Parse new commands from the file
 
@@ -73,4 +72,7 @@ public class RobotSwarm implements Simulator {
 		this.commands = commands;
 	}
 
+	public List<Robot> getRobots() {
+		return robots;
+	}
 }

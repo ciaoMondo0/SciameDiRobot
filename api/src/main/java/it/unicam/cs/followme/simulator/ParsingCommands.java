@@ -10,6 +10,8 @@ import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 import it.unicam.cs.followme.utilities.FollowMeParserHandler;
 
+import javafx.scene.control.SpinnerValueFactory;
+
 public class ParsingCommands implements FollowMeParserHandler {
 
 	private List<Command> commands;
@@ -17,6 +19,7 @@ public class ParsingCommands implements FollowMeParserHandler {
 	private Stack<LoopInstructions> stack;
 
 	private ProgramExecutor programExecution;
+
 
 	List<Area> shapesList;
 	List<String> labels;
@@ -29,6 +32,10 @@ public class ParsingCommands implements FollowMeParserHandler {
 		this.shapesList = shapes;
 		this.labels = new ArrayList<String>();
 	}
+
+
+
+
 
 	@Override
 	public void parsingStarted() {
