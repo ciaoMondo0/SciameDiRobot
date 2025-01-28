@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -97,10 +98,10 @@ public class HelloController {
                     double normalizedX = (robot.getPosition().getX() + 1) * WIDTH / 2;
                     double normalizedY = (robot.getPosition().getY() + 1) * HEIGHT / 2;
 
-                   Circle circle = new javafx.scene.shape.Circle(normalizedX, normalizedY, 5, javafx.scene.paint.Color.BLUE);
+                   Circle circle = new Circle(normalizedX, normalizedY, 5, Color.BLUE);
                     simulationPane.getChildren().add(circle);
 
-                   Text text = new javafx.scene.text.Text(normalizedX + 10, normalizedY, "ID: " + ( id + 1)  + " Label: " + robot.getLabel());
+                   Text text = new Text(normalizedX + 10, normalizedY, "ID: " + ( id + 1)  + " Label: " + robot.getLabel());
                     simulationPane.getChildren().add(text);
                 });
             }
