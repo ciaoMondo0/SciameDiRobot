@@ -13,16 +13,11 @@
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
   </padding>
 
-  <!-- Label to display welcome text -->
   <Label fx:id="welcomeText" text="Welcome to the Simulation!" />
 
-  <!-- Spinner for bot count selection -->
   <Spinner fx:id="botCountSpinner" prefWidth="100" />
 
-  <!-- Button for starting simulation -->
   <Button fx:id="startSimulationButton" text="Start Simulation" />
 
-
-  <!-- Pane for robot simulation -->
   <Pane fx:id="simulationPane" prefHeight="400.0" prefWidth="600.0" />
 </VBox>
