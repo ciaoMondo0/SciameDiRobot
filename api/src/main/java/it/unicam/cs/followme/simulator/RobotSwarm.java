@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import it.unicam.cs.followme.commands.Command;
 import it.unicam.cs.followme.entity.Robot;
@@ -45,27 +46,44 @@ public class RobotSwarm implements Simulator {
 
 	}
 
-	@Override
+
+
 	public void simulate(double dt, double time) {
 		double seconds = 0.0;
-		ExecutorService executor = Executors.newFixedThreadPool(robots.size());
-		while (seconds < time) {
-			for (Robot robot : robots) {
-				Runnable task = () -> {
-					this.program.executeCommand(robot);
-				};
-				executor.submit(task);
-			}
+		int numRobots = robots.size();
 
-			try {
+		ExecutorService executor = Executors.newFixedThreadPool(numRobots);
+
+		try {
+			while (seconds < time) {
+				List<Callable<Void>> tasks = new ArrayList<>();
+
+				for (Robot robot : robots) {
+					tasks.add(() -> {
+						this.program.executeCommand(robot);
+						return null;
+					});
+				}
+
+				executor.invokeAll(tasks);
+
 				Thread.sleep((long) (dt * 1000));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			seconds += dt;
-		}
 
-		executor.shutdown();
+				seconds += dt;
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		} finally {
+			executor.shutdown();
+			try {
+				if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+					executor.shutdownNow();
+				}
+			} catch (InterruptedException e) {
+				executor.shutdownNow();
+			}
+		}
 	}
 
 	public void setCommands(List<Command> commands) {

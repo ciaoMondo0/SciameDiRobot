@@ -1,16 +1,13 @@
 package it.unicam.cs.followme.app;
 
 import it.unicam.cs.followme.simulator.*;
-import it.unicam.cs.followme.space.Coordinates;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import it.unicam.cs.followme.commands.*;
-import it.unicam.cs.followme.entity.Robot;
 
 public class App {
 
@@ -33,7 +30,7 @@ public class App {
 
 
 		try {
-			robotSwarm.executeInstructions(instructionsFile, figure);
+			robotSwarm.executeInstructions(instructionsFile);
 
 			robotSwarm.simulate(1, 50);
 		} catch (IOException e) {

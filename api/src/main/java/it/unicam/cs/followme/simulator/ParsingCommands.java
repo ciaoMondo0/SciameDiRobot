@@ -10,7 +10,6 @@ import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 import it.unicam.cs.followme.utilities.FollowMeParserHandler;
 
-import javafx.scene.control.SpinnerValueFactory;
 
 public class ParsingCommands implements FollowMeParserHandler {
 

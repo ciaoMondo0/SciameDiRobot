@@ -13,10 +13,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
-import javax.management.timer.Timer;
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class HelloController {
 
