@@ -34,7 +34,6 @@ public class App {
 
 			robotSwarm.simulate(1, 50);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

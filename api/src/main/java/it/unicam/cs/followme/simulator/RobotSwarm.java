@@ -3,6 +3,7 @@ package it.unicam.cs.followme.simulator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -16,43 +17,33 @@ import it.unicam.cs.followme.space.Coordinates;
 
 public class RobotSwarm implements Simulator {
 
-	private List<Robot> robots;
-	private List<Command> commands;
-	private List<Area> shapes;
+	private final List<Robot> robots;
+	private final List<Area> shapes;
+	private final ExecutorService executor;
+	private volatile List<Command> commands;
 	private ProgramExecutor program;
-	private FileReader files;
 
 	public RobotSwarm(int numberRobots) {
 		this.robots = new ArrayList<>();
 		this.commands = new ArrayList<>();
+
 		this.shapes = new ArrayList<>();
-
 		this.program = new ProgramExecutor(commands, shapes);
+		this.executor = Executors.newFixedThreadPool(numberRobots);
+
 		for (int i = 0; i < numberRobots; i++) {
-			Robot robot = new Robot(Coordinates.generateRandomCoordinates());
-			robots.add(robot);
+			robots.add(new Robot(Coordinates.generateRandomCoordinates()));
 		}
-		files = new FileReader();
-
 	}
 
-	
-
-	public void executeInstructions(File comandi) throws IOException, InterruptedException {
-
-		commands = files.parseCommands(comandi); // Parse new commands from the file
-
+	public synchronized void executeInstructions(File comandi) throws IOException {
+		FileReader fileReader = new FileReader();
+		this.commands = fileReader.parseCommands(comandi);
 		this.program = new ProgramExecutor(commands, shapes);
-
 	}
-
-
 
 	public void simulate(double dt, double time) {
 		double seconds = 0.0;
-		int numRobots = robots.size();
-
-		ExecutorService executor = Executors.newFixedThreadPool(numRobots);
 
 		try {
 			while (seconds < time) {
@@ -60,37 +51,36 @@ public class RobotSwarm implements Simulator {
 
 				for (Robot robot : robots) {
 					tasks.add(() -> {
-						this.program.executeCommand(robot);
+						program.executeCommand(robot);
 						return null;
 					});
 				}
 
 				executor.invokeAll(tasks);
-
 				Thread.sleep((long) (dt * 1000));
-
 				seconds += dt;
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			e.printStackTrace();
-		} finally {
-			executor.shutdown();
-			try {
-				if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-					executor.shutdownNow();
-				}
-			} catch (InterruptedException e) {
-				executor.shutdownNow();
-			}
 		}
 	}
 
-	public void setCommands(List<Command> commands) {
+	public void shutdown() {
+		executor.shutdown();
+		try {
+			if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+				executor.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			executor.shutdownNow();
+		}
+	}
+
+	public synchronized void setCommands(List<Command> commands) {
 		this.commands = commands;
 	}
 
 	public List<Robot> getRobots() {
-		return robots;
+		return Collections.unmodifiableList(robots);
 	}
 }
