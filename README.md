@@ -1,4 +1,4 @@
-English: 
+## English
 
 # Simulation of a Robot Swarm
 This project is a Java library for simulating a swarm of robots moving on a flat surface. The robots can perceive the environment, signal conditions, move according to different strategies, and follow instructions defined by a specific language. The language allows issuing commands such as movement toward specific coordinates, random movement, condition signaling, iterations, and stop conditions based on environmental perception.
@@ -17,7 +17,8 @@ The project can be executed using the commands gradlew build and gradlew run.
 
 
 
-Italian:
+## Italian
+
 # Simulazione di uno Sciame di Robot
 
 Questo progetto è una libreria Java per la simulazione di uno sciame di robot che si muovono su una superficie piana. I robot possono percepire l'ambiente, segnalare condizioni, muoversi secondo diverse strategie e seguire istruzioni definite da un linguaggio specifico. Il linguaggio permette di impartire comandi come movimento verso coordinate specifiche, movimento casuale, segnalazione di condizioni, iterazioni e condizioni di arresto basate sulla percezione dell'ambiente.
