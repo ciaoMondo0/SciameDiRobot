@@ -15,14 +15,13 @@ public class FollowCommand implements Command {
 	private double distance;
 	private double speed;
 	private List<Robot> robots;
-	private ProgramExecutor execution;
 
 	public FollowCommand(String label, double distance, double speed) {
 		this.label = label;
 		this.distance = distance;
 		this.speed = speed;
 		this.robots = new ArrayList<>();
-		this.execution = new ProgramExecutor();
+
 
 	}
 
@@ -39,7 +38,7 @@ public class FollowCommand implements Command {
 			robot.move(speed, dir);
 
 		} else {
-			this.moveRandom(robot);
+			this.moveRandom(robot, execution);
 		}
 		System.out.println(robot + " is following " + label + " at speed " + speed);
 		
@@ -47,10 +46,10 @@ public class FollowCommand implements Command {
 
 	}
 
-	private void moveRandom(Robot robot) {
+	private void moveRandom(Robot robot, ProgramExecutor executor) {
 		Coordinates x = new Coordinates(-this.distance, -this.distance);
 		Coordinates y = new Coordinates(this.distance, this.distance);
-		new MoveRandom(x, y, this.speed).execute(robot, execution);
+		new MoveRandom(x, y, this.speed).execute(robot, executor);
 	}
 
 	private Coordinates average(List<Robot> robots) {

@@ -7,7 +7,6 @@ public class RepeatCommand implements Command, LoopInstructions {
 
 	private int times;
 	private int repetitions;
-	private ProgramExecutor programExecution;
 	private final int jumpIndex;
 	private int endCommandIndex;
 
@@ -15,7 +14,6 @@ public class RepeatCommand implements Command, LoopInstructions {
 		this.times = times;
 		this.jumpIndex = jumpIndex;
 		this.endCommandIndex = 0;
-		programExecution = new ProgramExecutor();
 	}
 
 	@Override

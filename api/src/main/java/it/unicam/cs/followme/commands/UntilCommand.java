@@ -11,7 +11,6 @@ public class UntilCommand implements Command, LoopInstructions {
 
 	private final String label;
 	private final List<Area> shapes;
-	private ProgramExecutor programExecution;
 
 	private final int jumpIndex;
 	private int nextIndex;
@@ -20,7 +19,6 @@ public class UntilCommand implements Command, LoopInstructions {
 		this.label = label;
 		this.jumpIndex = jumpIndex;
 		this.shapes = shapes;
-		programExecution = new ProgramExecutor();
 
 	}
 	

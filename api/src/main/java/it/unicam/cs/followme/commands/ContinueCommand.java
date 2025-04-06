@@ -13,7 +13,7 @@ public class ContinueCommand implements Command {
 	public ContinueCommand(int time, int jumpIndex) {
 		this.time = time;
 		this.seconds = 0;
-		programExecution = new ProgramExecutor();
+
 		this.jumpIndex = jumpIndex;
 	}
 

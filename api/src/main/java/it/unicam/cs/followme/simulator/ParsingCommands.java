@@ -25,7 +25,6 @@ public class ParsingCommands implements FollowMeParserHandler {
 
 
 	public ParsingCommands(List<Command> commands, List<Area> shapes) {
-		this.programExecution = new ProgramExecutor();
 		this.commands = new ArrayList<>();
 		this.stack = new Stack<>();
 		this.shapesList = shapes;
