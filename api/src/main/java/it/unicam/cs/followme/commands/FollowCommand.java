@@ -9,58 +9,78 @@ import it.unicam.cs.followme.simulator.ProgramExecutor;
 import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 
+/**
+ * Comando che permette ad un robot di seguire altri robot identificati da un'etichetta.
+ */
 public class FollowCommand implements Command {
 
-	private String label;
-	private double distance;
-	private double speed;
-	private List<Robot> robots;
+	private final String label;
+	private final double distance;
+	private final double speed;
+	// Lista di robot che rispondono all'etichetta; inizializzata come lista vuota.
+	private final List<Robot> robots = new ArrayList<>();
 
+	/**
+	 * Costruttore.
+	 *
+	 * @param label    l'etichetta da seguire
+	 * @param distance la distanza massima per il riconoscimento
+	 * @param speed    la velocità di movimento
+	 */
 	public FollowCommand(String label, double distance, double speed) {
 		this.label = label;
 		this.distance = distance;
 		this.speed = speed;
-		this.robots = new ArrayList<>();
-
-
 	}
 
+	/**
+	 * Esegue il comando per seguire altri robot con l'etichetta indicata.
+	 *
+	 * @param robot     il robot su cui eseguire il comando
+	 * @param execution il gestore dell'esecuzione dei comandi
+	 */
+	@Override
 	public void execute(Robot robot, ProgramExecutor execution) {
-		
-
-		List<Robot> labelledRobots = this.robots.stream().filter(r -> r.getLabel().equals(label))
+		// Filtra i robot con l'etichetta e entro la distanza specificata
+		List<Robot> labelledRobots = this.robots.stream()
+				.filter(r -> r.getLabel() != null && r.getLabel().equals(label))
 				.filter(r -> Coordinates.calculateDistance(robot.getPosition(), r.getPosition()) <= distance)
 				.toList();
-		if (!labelledRobots.isEmpty()) {
-			Coordinates average = this.average(labelledRobots);
 
+		if (!labelledRobots.isEmpty()) {
+			Coordinates average = average(labelledRobots);
 			Direction dir = Direction.calculateDirection(robot.getPosition(), average);
 			robot.move(speed, dir);
-
 		} else {
-			this.moveRandom(robot, execution);
+			moveRandom(robot, execution);
 		}
-		System.out.println(robot + " is following " + label + " at speed " + speed);
-		
+		System.out.println(robot + " sta seguendo " + label + " a velocità " + speed);
 		execution.increment();
-
 	}
 
-	private void moveRandom(Robot robot, ProgramExecutor executor) {
-		Coordinates x = new Coordinates(-this.distance, -this.distance);
-		Coordinates y = new Coordinates(this.distance, this.distance);
-		new MoveRandom(x, y, this.speed).execute(robot, executor);
-	}
-
+	/**
+	 * Calcola la posizione media dei robot in una lista.
+	 *
+	 * @param robots lista dei robot
+	 * @return le coordinate medie
+	 */
 	private Coordinates average(List<Robot> robots) {
 		OptionalDouble averageX = robots.stream().mapToDouble(r -> r.getPosition().getX()).average();
 		OptionalDouble averageY = robots.stream().mapToDouble(r -> r.getPosition().getY()).average();
-		double avgX = averageX.isPresent() ? averageX.getAsDouble() : 0;
-		double avgY = averageY.isPresent() ? averageY.getAsDouble() : 0;
+		double avgX = averageX.orElse(0);
+		double avgY = averageY.orElse(0);
 		return new Coordinates(avgX, avgY);
-
 	}
 
-	
-
+	/**
+	 * Muove il robot in modo casuale se non viene trovato alcun robot etichettato.
+	 *
+	 * @param robot     il robot su cui eseguire il comando
+	 * @param execution il gestore dell'esecuzione dei comandi
+	 */
+	private void moveRandom(Robot robot, ProgramExecutor execution) {
+		Coordinates lowerBound = new Coordinates(-this.distance, -this.distance);
+		Coordinates upperBound = new Coordinates(this.distance, this.distance);
+		new MoveRandom(lowerBound, upperBound, this.speed).execute(robot, execution);
+	}
 }

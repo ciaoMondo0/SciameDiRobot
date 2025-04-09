@@ -4,137 +4,124 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import it.unicam.cs.followme.shapes.Area;
 import it.unicam.cs.followme.commands.*;
 import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
+import it.unicam.cs.followme.shapes.Area;
 import it.unicam.cs.followme.utilities.FollowMeParserHandler;
 
-
+/**
+ * Classe che si occupa del parsing dei comandi e della costruzione della lista di istruzioni.
+ */
 public class ParsingCommands implements FollowMeParserHandler {
 
 	private List<Command> commands;
-
 	private Stack<LoopInstructions> stack;
-
 	private ProgramExecutor programExecution;
+	private final List<Area> shapesList;
+	private final List<String> labels;
 
-
-	List<Area> shapesList;
-	List<String> labels;
-
-
+	/**
+	 * Costruttore.
+	 *
+	 * @param commands lista iniziale di comandi (potenzialmente vuota)
+	 * @param shapes   lista di aree
+	 */
 	public ParsingCommands(List<Command> commands, List<Area> shapes) {
 		this.commands = new ArrayList<>();
 		this.stack = new Stack<>();
 		this.shapesList = shapes;
-		this.labels = new ArrayList<String>();
+		this.labels = new ArrayList<>();
 	}
-
-
-
-
 
 	@Override
 	public void parsingStarted() {
 		this.programExecution = new ProgramExecutor();
-
 		this.commands = new ArrayList<>();
 		this.stack = new Stack<>();
-
 	}
 
 	@Override
 	public void parsingDone() {
-		this.getCommands();
-
+		// Operazioni eventuali a fine parsing
+		getCommands();
 	}
 
 	@Override
 	public void moveCommand(double[] args) {
-		this.commands.add(new MoveCommand(new Direction((args[0]), args[1]), args[2]));
+		commands.add(new MoveCommand(new Direction(args[0], args[1]), args[2]));
 	}
 
 	@Override
 	public void moveRandomCommand(double[] args) {
-		this.commands
-				.add(new MoveRandom(new Coordinates((args[0]), args[1]), new Coordinates((args[2]), args[3]), args[2]));
+		commands.add(new MoveRandom(new Coordinates(args[0], args[1]), new Coordinates(args[2], args[3]), args[2]));
 	}
 
 	@Override
 	public void signalCommand(String label) {
-		this.commands.add(new SignalLabelcommand(label));
-
+		commands.add(new SignalLabelcommand(label));
 	}
 
 	@Override
 	public void unsignalCommand(String label) {
-		this.commands.add(new UnsignalLabel(label));
-
+		commands.add(new UnsignalLabel(label));
 	}
 
 	@Override
 	public void followCommand(String label, double[] args) {
-		this.commands.add(new FollowCommand(label, args[5], args[6]));
-
+		commands.add(new FollowCommand(label, args[5], args[6]));
 	}
 
 	@Override
 	public void stopCommand() {
-		this.commands.add(new StopCommand());
-
+		commands.add(new StopCommand());
 	}
 
 	@Override
 	public void continueCommand(int s) {
 		int currentCommandIndex = commands.size();
-
-		this.commands.add(new ContinueCommand(s, currentCommandIndex));
-
+		commands.add(new ContinueCommand(s, currentCommandIndex));
 	}
 
 	@Override
 	public void repeatCommandStart(int n) {
 		int currentCommandIndex = commands.size();
-
-		this.commands.add(new RepeatCommand(n, currentCommandIndex));
-		this.stack.push(new RepeatCommand(n, currentCommandIndex));
-
+		RepeatCommand repeat = new RepeatCommand(n, currentCommandIndex);
+		commands.add(repeat);
+		stack.push(repeat);
 	}
 
 	@Override
 	public void untilCommandStart(String label) {
 		int currentCommandIndex = commands.size();
-
-		this.commands.add(new UntilCommand(label, currentCommandIndex, shapesList));
-		this.stack.push(new UntilCommand(label, currentCommandIndex, shapesList));
-
+		UntilCommand until = new UntilCommand(label, currentCommandIndex, shapesList);
+		commands.add(until);
+		stack.push(until);
 	}
 
 	@Override
 	public void doForeverStart() {
 		int currentCommandIndex = commands.size();
-
-		this.commands.add(new DoForeverCommand(currentCommandIndex));
-		this.stack.push(new DoForeverCommand(currentCommandIndex));
-
+		DoForeverCommand forever = new DoForeverCommand(currentCommandIndex);
+		commands.add(forever);
+		stack.push(forever);
 	}
 
-	
-	
-	//sets the index to the command after done
 	@Override
 	public void doneCommand() {
 		if (!stack.isEmpty()) {
-			int index = this.stack.pop().getJump();
-			((LoopInstructions) this.commands.get(index)).setEndIndex(commands.size());
-
+			int index = stack.pop().getJump();
+			((LoopInstructions) commands.get(index)).setEndIndex(commands.size());
 			commands.add(new DoneCommand(index));
 		}
 	}
 
+	/**
+	 * Restituisce la lista di comandi parsati.
+	 *
+	 * @return la lista dei comandi
+	 */
 	public List<Command> getCommands() {
 		return commands;
 	}
-
 }
