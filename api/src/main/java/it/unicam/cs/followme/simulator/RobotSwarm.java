@@ -9,7 +9,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import it.unicam.cs.followme.commands.Command;
 import it.unicam.cs.followme.entity.Robot;
 import it.unicam.cs.followme.shapes.Area;
@@ -23,47 +22,52 @@ public class RobotSwarm implements Simulator {
 	private final List<Robot> robots;
 	private final List<Area> shapes;
 	private final ExecutorService executor;
-	private volatile List<Command> commands;
-	private ProgramExecutor program;
+	private volatile List<Command<Robot>> commands;
+	private ProgramExecutor<Robot> program;
 
 	/**
-	 * Costruisce lo swarm specificando il numero di robot.
+	 * Costruisce lo sciame specificando il numero di robot.
 	 *
-	 * @param numberRobots il numero di robot nello swarm
+	 * @param numberRobots il numero di robot nello sciame
 	 */
 	public RobotSwarm(int numberRobots) {
 		this.robots = new ArrayList<>();
 		this.commands = new ArrayList<>();
 		this.shapes = new ArrayList<>();
-		this.program = new ProgramExecutor(commands, shapes);
+		// Il ProgramExecutor viene creato e assegnato a tutti i robot.
+		this.program = new ProgramExecutor<>(commands, shapes);
 		this.executor = Executors.newFixedThreadPool(numberRobots);
-
 		for (int i = 0; i < numberRobots; i++) {
-			robots.add(new Robot(Coordinates.generateRandomCoordinates()));
+			Robot robot = new Robot(Coordinates.generateRandomCoordinates());
+			robot.setProgramExecutor(program);
+			robots.add(robot);
 		}
 	}
 
 	/**
-	 * Legge il file dei comandi e li esegue impostando il ProgramExecutor.
+	 * Esegue l'istruzione caricando i comandi da un file.
 	 *
-	 * @param comandi il file contenente i comandi
-	 * @throws IOException se si verificano problemi di I/O
+	 * @param file il file contenente i comandi
+	 * @throws IOException se vi sono errori in I/O
 	 */
-	public synchronized void executeInstructions(File comandi) throws IOException {
+	public synchronized void executeInstructions(File file) throws IOException {
 		FileReader fileReader = new FileReader();
-		this.commands = fileReader.parseCommands(comandi);
-		this.program = new ProgramExecutor(commands, shapes);
+		this.commands = fileReader.parseCommands(file);
+		this.program = new ProgramExecutor<>(commands, shapes);
+		// Aggiorna il riferimento al ProgramExecutor in ogni robot
+		for (Robot robot : robots) {
+			robot.setProgramExecutor(program);
+		}
 	}
 
 	/**
-	 * Simula l'esecuzione dei comandi per un tempo totale specificato.
+	 * Simula l'esecuzione dei comandi per il tempo specificato.
 	 *
-	 * @param dt   il passo temporale in secondi
-	 * @param time il tempo totale di simulazione in secondi
+	 * @param dt   il passo di tempo (in secondi)
+	 * @param time il tempo totale di simulazione (in secondi)
 	 */
 	public void simulate(double dt, double time) {
 		double seconds = 0.0;
-
 		try {
 			while (seconds < time) {
 				List<Callable<Void>> tasks = new ArrayList<>();
@@ -101,12 +105,12 @@ public class RobotSwarm implements Simulator {
 	 *
 	 * @param commands la lista dei comandi da impostare
 	 */
-	public synchronized void setCommands(List<Command> commands) {
+	public synchronized void setCommands(List<Command<Robot>> commands) {
 		this.commands = commands;
 	}
 
 	/**
-	 * Restituisce la lista dei robot in maniera non modificabile.
+	 * Restituisce la lista dei robot in modo non modificabile.
 	 *
 	 * @return la lista dei robot
 	 */

@@ -1,12 +1,11 @@
 package it.unicam.cs.followme.commands;
 
 import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 
 /**
  * Comando che segnala la conclusione di un ciclo di esecuzione.
  */
-public class DoneCommand implements Command {
+public class DoneCommand implements Command<Robot> {
 
 	private final int jumpIndex;
 
@@ -19,15 +18,9 @@ public class DoneCommand implements Command {
 		this.jumpIndex = jumpIndex;
 	}
 
-	/**
-	 * Esegue il comando effettuando il salto al punto indicato e stampa il messaggio "Done".
-	 *
-	 * @param robot            il robot su cui eseguire il comando
-	 * @param programExecution il gestore dell'esecuzione dei comandi
-	 */
 	@Override
-	public void execute(Robot robot, ProgramExecutor programExecution) {
-		programExecution.jumpTo(jumpIndex);
+	public void execute(Robot robot) {
+		robot.getProgramExecutor().jumpTo(jumpIndex);
 		System.out.println("Done");
 	}
 }

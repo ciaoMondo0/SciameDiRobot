@@ -1,23 +1,27 @@
 package it.unicam.cs.followme.commands;
 
 import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 
-public class UnsignalLabel implements Command{
-	
-	private String label;
-	
+/**
+ * Comando che rimuove (unsignal) un'etichetta dal robot.
+ */
+public class UnsignalLabel implements Command<Robot> {
+
+	private final String label;
+
+	/**
+	 * Costruttore.
+	 *
+	 * @param label l'etichetta da rimuovere
+	 */
 	public UnsignalLabel(String label) {
 		this.label = label;
 	}
 
 	@Override
-	public void execute(Robot robot, ProgramExecutor programExecution) {
+	public void execute(Robot robot) {
 		robot.unsignal(label);
-	programExecution.increment();
-	System.out.println(robot + " unsignalled " + label);
+		System.out.println(robot + " unsignalled " + label);
+		robot.getProgramExecutor().increment();
 	}
-
-	
-
 }

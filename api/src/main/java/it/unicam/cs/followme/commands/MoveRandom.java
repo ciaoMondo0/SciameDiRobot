@@ -1,14 +1,13 @@
 package it.unicam.cs.followme.commands;
 
 import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 
 /**
  * Comando che muove il robot in maniera casuale entro due coordinate.
  */
-public class MoveRandom implements Command {
+public class MoveRandom implements Command<Robot> {
 
 	private final Coordinates lowerBound;
 	private final Coordinates upperBound;
@@ -27,18 +26,12 @@ public class MoveRandom implements Command {
 		this.speed = speed;
 	}
 
-	/**
-	 * Esegue il comando generando una direzione casuale e muovendo il robot.
-	 *
-	 * @param robot            il robot su cui eseguire il comando
-	 * @param programExecution il gestore dell'esecuzione dei comandi
-	 */
 	@Override
-	public void execute(Robot robot, ProgramExecutor programExecution) {
+	public void execute(Robot robot) {
 		Direction dir = Direction.calculateDirection(robot.getPosition(),
 				Coordinates.getRandom(lowerBound, upperBound));
 		robot.move(speed, dir);
 		System.out.println(robot + " si muove casualmente verso " + dir);
-		programExecution.increment();
+		robot.getProgramExecutor().increment();
 	}
 }

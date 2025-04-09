@@ -1,15 +1,13 @@
 package it.unicam.cs.followme.commands;
 
+import it.unicam.cs.followme.entity.Robot;
 import java.util.ArrayList;
 import java.util.List;
-
-import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 
 /**
  * Comando per segnalare un'etichetta associata al robot.
  */
-public class SignalLabelcommand implements Command {
+public class SignalLabelcommand implements Command<Robot> {
 
 	private final String label;
 	private final List<String> labels = new ArrayList<>();
@@ -23,16 +21,10 @@ public class SignalLabelcommand implements Command {
 		this.label = label;
 	}
 
-	/**
-	 * Esegue il comando di segnalazione sul robot.
-	 *
-	 * @param robot            il robot su cui eseguire il comando
-	 * @param programExecution il gestore dell'esecuzione dei comandi
-	 */
 	@Override
-	public void execute(Robot robot, ProgramExecutor programExecution) {
+	public void execute(Robot robot) {
 		robot.signals(label);
 		System.out.println(robot + " segnala " + label);
-		programExecution.increment();
+		robot.getProgramExecutor().increment();
 	}
 }

@@ -5,19 +5,17 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 
 /**
  * Comando che permette ad un robot di seguire altri robot identificati da un'etichetta.
  */
-public class FollowCommand implements Command {
+public class FollowCommand implements Command<Robot> {
 
 	private final String label;
 	private final double distance;
 	private final double speed;
-	// Lista di robot che rispondono all'etichetta; inizializzata come lista vuota.
 	private final List<Robot> robots = new ArrayList<>();
 
 	/**
@@ -33,15 +31,8 @@ public class FollowCommand implements Command {
 		this.speed = speed;
 	}
 
-	/**
-	 * Esegue il comando per seguire altri robot con l'etichetta indicata.
-	 *
-	 * @param robot     il robot su cui eseguire il comando
-	 * @param execution il gestore dell'esecuzione dei comandi
-	 */
 	@Override
-	public void execute(Robot robot, ProgramExecutor execution) {
-		// Filtra i robot con l'etichetta e entro la distanza specificata
+	public void execute(Robot robot) {
 		List<Robot> labelledRobots = this.robots.stream()
 				.filter(r -> r.getLabel() != null && r.getLabel().equals(label))
 				.filter(r -> Coordinates.calculateDistance(robot.getPosition(), r.getPosition()) <= distance)
@@ -52,10 +43,10 @@ public class FollowCommand implements Command {
 			Direction dir = Direction.calculateDirection(robot.getPosition(), average);
 			robot.move(speed, dir);
 		} else {
-			moveRandom(robot, execution);
+			moveRandom(robot);
 		}
 		System.out.println(robot + " sta seguendo " + label + " a velocità " + speed);
-		execution.increment();
+		robot.getProgramExecutor().increment();
 	}
 
 	/**
@@ -73,14 +64,14 @@ public class FollowCommand implements Command {
 	}
 
 	/**
-	 * Muove il robot in modo casuale se non viene trovato alcun robot etichettato.
+	 * Muove il robot in modo casuale se non trova robot con la label specificata.
 	 *
-	 * @param robot     il robot su cui eseguire il comando
-	 * @param execution il gestore dell'esecuzione dei comandi
+	 * @param robot il robot che esegue il comando
 	 */
-	private void moveRandom(Robot robot, ProgramExecutor execution) {
+	private void moveRandom(Robot robot) {
 		Coordinates lowerBound = new Coordinates(-this.distance, -this.distance);
 		Coordinates upperBound = new Coordinates(this.distance, this.distance);
-		new MoveRandom(lowerBound, upperBound, this.speed).execute(robot, execution);
+		// Viene utilizzato il comando MoveRandom per effettuare un movimento casuale
+		new MoveRandom(lowerBound, upperBound, this.speed).execute(robot);
 	}
 }

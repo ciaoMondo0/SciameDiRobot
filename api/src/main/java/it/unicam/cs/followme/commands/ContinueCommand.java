@@ -1,22 +1,21 @@
 package it.unicam.cs.followme.commands;
 
 import it.unicam.cs.followme.entity.Robot;
-import it.unicam.cs.followme.simulator.ProgramExecutor;
 
 /**
- * Comando che fa continuare il movimento del robot per un determinato intervallo di tempo.
+ * Comando che continua il movimento del robot per un certo numero di "tick".
  */
-public class ContinueCommand implements Command {
+public class ContinueCommand implements Command<Robot> {
 
 	private int seconds;
 	private final int jumpIndex;
 	private final int time;
 
 	/**
-	 * Costruisce un comando per continuare il movimento.
+	 * Costruttore.
 	 *
-	 * @param time      il numero di secondi per il movimento continuo
-	 * @param jumpIndex l'indice di salto per il ProgramExecutor
+	 * @param time      il numero di "tick" in cui continuare il movimento
+	 * @param jumpIndex l'indice a cui saltare se non sono trascorsi sufficienti tick
 	 */
 	public ContinueCommand(int time, int jumpIndex) {
 		this.time = time;
@@ -24,22 +23,16 @@ public class ContinueCommand implements Command {
 		this.jumpIndex = jumpIndex;
 	}
 
-	/**
-	 * Esegue il comando sul robot e gestisce il salto o l'incremento dell'indice del programma.
-	 *
-	 * @param robot            il robot su cui eseguire il comando
-	 * @param programExecution il gestore dell'esecuzione dei comandi
-	 */
 	@Override
-	public void execute(Robot robot, ProgramExecutor programExecution) {
-		System.out.println(robot + " continua per " + time + " secondi da " + robot.getPosition());
+	public void execute(Robot robot) {
+		System.out.println(robot + " continua per " + time + " tick da " + robot.getPosition());
 		seconds++;
-
+		// Utilizza il ProgramExecutor associato al robot per controllare il flusso dei comandi.
 		if (seconds < time) {
 			robot.continueMovement();
-			programExecution.jumpTo(jumpIndex);
+			robot.getProgramExecutor().jumpTo(jumpIndex);
 		} else {
-			programExecution.increment();
+			robot.getProgramExecutor().increment();
 		}
 	}
 }
