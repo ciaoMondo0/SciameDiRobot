@@ -1,66 +1,85 @@
 package it.unicam.cs.followme.simulator;
 
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import it.unicam.cs.followme.utilities.*;
-import it.unicam.cs.followme.commands.Command;
-import it.unicam.cs.followme.shapes.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+import it.unicam.cs.followme.utilities.FollowMeParser;
+import it.unicam.cs.followme.utilities.FollowMeParserException;
+import it.unicam.cs.followme.utilities.ShapeData;
+import it.unicam.cs.followme.commands.Command;
+import it.unicam.cs.followme.shapes.Area;
+import it.unicam.cs.followme.shapes.Circle;
+import it.unicam.cs.followme.shapes.Rectangle;
+import it.unicam.cs.followme.entity.Robot;
+
+/**
+ * Un file reader che analizza i comandi e carica le forme utilizzate per il simulatore di robot.
+ *
+ * Questa classe utilizza un FollowMeParser per caricare le forme dell'ambiente e i comandi dei robot.
+ * Restituisce comandi type-safe (Command<Robot>) e una lista di oggetti Area.
+ */
 public class FileReader {
 
-	private ArrayList<Area> shapesList;
+	private final ArrayList<Area> shapesList;
 	private final FollowMeParser parser;
-	private List<Command> commands;
-	private ParsingCommands parsingCommands;
+	private final List<Command<Robot>> commands;
+	private final ParsingCommands parsingCommands;
 
+	/**
+	 * Costruisce un FileReader.
+	 */
 	public FileReader() {
-		shapesList = new ArrayList<Area>();
-		parsingCommands = new ParsingCommands(commands, shapesList);
-
+		this.shapesList = new ArrayList<>();
+		// Inizializza la lista dei comandi in modo che non sia null.
+		this.commands = new ArrayList<>();
+		// Passa i comandi e le forme al parser handler.
+		this.parsingCommands = new ParsingCommands(commands, shapesList);
 		this.parser = new FollowMeParser(parsingCommands);
 	}
 
-	public ArrayList<Area> loadShapes(File figure){
-		 try {
-	            List<ShapeData> shapes = parser.parseEnvironment(figure);
-	            for (ShapeData shape : shapes) {
-	                if (shape.shape().equals("RECTANGLE")) {
-	                	double[] args = shape.args();
-	                	shapesList.add(new Rectangle(args[0], args[1], args[2], args[3], shape.label()));
-	                }
-	                if (shape.shape().equals("CIRCLE")) {
-	                	double[] args = shape.args();
-	                	shapesList.add(new Circle(args[0], args[1], args[2], shape.label()));
-	                }
-	            }
-	            return shapesList;
-	        } catch (FollowMeParserException | IOException e) {
-	            throw new RuntimeException(e);
-	        }
-		
-
-	}
-	/*
-	 * public List<Command> parseCommands(String file) throws IOException { try {
-	 * File robotProgram = new File(file); parser.parseRobotProgram(robotProgram);
-	 * 
-	 * } catch (FollowMeParserException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); } return parsingCommands.getCommands();
-	 * 
-	 * }
+	/**
+	 * Carica le forme dal file fornito.
+	 *
+	 * @param figure il file contenente le definizioni delle forme.
+	 * @return la lista degli oggetti Area caricati.
 	 */
+	public ArrayList<Area> loadShapes(File figure) {
+		try {
+			List<ShapeData> shapes = parser.parseEnvironment(figure);
+			for (ShapeData shape : shapes) {
+				if ("RECTANGLE".equalsIgnoreCase(shape.shape())) {
+					double[] args = shape.args();
+					shapesList.add(new Rectangle(args[0], args[1], args[2], args[3], shape.label()));
+				}
+				if ("CIRCLE".equalsIgnoreCase(shape.shape())) {
+					double[] args = shape.args();
+					shapesList.add(new Circle(args[0], args[1], args[2], shape.label()));
+				}
+			}
+			return shapesList;
+		} catch (FollowMeParserException | IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-	// Tempo solution
-
-	public List<Command> parseCommands(File commands) throws IOException {
-		  try {
-		        parser.parseRobotProgram(commands);
-		    } catch (FollowMeParserException e) {
-		        e.printStackTrace();
-		    }
-		    return parsingCommands.getCommands();// Access the commands from the ParsingCommands object
-	  }
-
+	/**
+	 * Analizza i comandi dei robot dal file fornito.
+	 *
+	 * @param commandsFile il file contenente i comandi dei robot.
+	 * @return la lista dei comandi analizzati.
+	 * @throws IOException se si verifica un errore I/O durante il parsing.
+	 */
+	public List<Command<Robot>> parseCommands(File commandsFile) throws IOException {
+		try {
+			parser.parseRobotProgram(commandsFile);
+		} catch (FollowMeParserException e) {
+			e.printStackTrace();
+		}
+		// Restituisce i comandi accumulati dal gestore ParsingCommands.
+		return parsingCommands.getCommands();
+	}
 }

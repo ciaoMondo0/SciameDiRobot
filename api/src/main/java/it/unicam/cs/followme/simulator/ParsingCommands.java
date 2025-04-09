@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import it.unicam.cs.followme.commands.*;
+import it.unicam.cs.followme.entity.Robot;
 import it.unicam.cs.followme.space.Coordinates;
 import it.unicam.cs.followme.space.Direction;
 import it.unicam.cs.followme.shapes.Area;
@@ -15,7 +16,7 @@ import it.unicam.cs.followme.utilities.FollowMeParserHandler;
  */
 public class ParsingCommands implements FollowMeParserHandler {
 
-	private List<Command> commands;
+	private List<Command<Robot>> commands;
 	private Stack<LoopInstructions> stack;
 	private ProgramExecutor programExecution;
 	private final List<Area> shapesList;
@@ -27,7 +28,7 @@ public class ParsingCommands implements FollowMeParserHandler {
 	 * @param commands lista iniziale di comandi (potenzialmente vuota)
 	 * @param shapes   lista di aree
 	 */
-	public ParsingCommands(List<Command> commands, List<Area> shapes) {
+	public ParsingCommands(List<Command<Robot>> commands, List<Area> shapes) {
 		this.commands = new ArrayList<>();
 		this.stack = new Stack<>();
 		this.shapesList = shapes;
@@ -121,7 +122,7 @@ public class ParsingCommands implements FollowMeParserHandler {
 	 *
 	 * @return la lista dei comandi
 	 */
-	public List<Command> getCommands() {
+	public List<Command<Robot>> getCommands() {
 		return commands;
 	}
 }
