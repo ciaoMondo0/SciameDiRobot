@@ -11,14 +11,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class Builder {
-    public int robotCount = 10;
-    public ExecutorService executor;
-    public ProgramExecutor<Robot> programExecutor;
-    public ParsingCommands commandParser;
-    public List<Area> shapes = new ArrayList<>();
+    private ExecutorService executor;
+    private ParsingCommands commandParser;
 
     public Builder withRobotCount(int count) {
-        this.robotCount = count;
         return this;
     }
 
@@ -28,7 +24,6 @@ public class Builder {
     }
 
     public Builder withProgramExecutor(ProgramExecutor<Robot> programExecutor) {
-        this.programExecutor = programExecutor;
         return this;
     }
 
@@ -38,7 +33,6 @@ public class Builder {
     }
 
     public Builder withShapes(List<Area> shapes) {
-        this.shapes = shapes;
         return this;
     }
 
